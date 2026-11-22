@@ -46,7 +46,34 @@ window.HTMLCanvasElement.prototype.getContext = function () {
   };
 };
 window.HTMLCanvasElement.prototype.toDataURL = () => 'data:image/png;base64,';
-window.AudioContext = undefined;
+// Тихий AudioContext: пути звукового движка действительно исполняются,
+// но ни один сэмпл не считается (в jsdom нет WebAudio).
+function param(v) {
+  return {
+    value: v,
+    setValueAtTime() {}, exponentialRampToValueAtTime() {}, linearRampToValueAtTime() {},
+    setTargetAtTime() {}, cancelScheduledValues() {},
+  };
+}
+function SilentCtx() {
+  this.state = 'running';
+  this.sampleRate = 44100;
+  this._t = 0;
+  this.destination = { connect() {} };
+}
+SilentCtx.prototype = {
+  get currentTime() { this._t += 0.001; return this._t; },
+  resume() { this.state = 'running'; return Promise.resolve(); },
+  createGain() { return { gain: param(1), connect() {} }; },
+  createOscillator() { return { type: 'sine', frequency: param(440), connect() {}, start() {}, stop() {} }; },
+  createBuffer(ch, len) { return { getChannelData: () => new Float32Array(len) }; },
+  createBufferSource() { return { buffer: null, connect() {}, start() {}, stop() {} }; },
+  createBiquadFilter() { return { type: 'lowpass', frequency: param(1000), Q: param(1), connect() {} }; },
+  createDynamicsCompressor() {
+    return { threshold: param(0), knee: param(0), ratio: param(1), attack: param(0), release: param(0), connect() {} };
+  },
+};
+window.AudioContext = SilentCtx;
 window.webkitAudioContext = undefined;
 window.performance = window.performance || { now: () => Date.now() };
 window.navigator.clipboard = { readText: async () => 'привет из буфера' };
@@ -260,6 +287,19 @@ async function autoPlayer() {
   const bundle = fs.readFileSync(bundlePath, 'utf8');
   window.eval(bundle);
 
+  // звук и музыка — отдельный самодостаточный файл; проверяем, что он не ломает сценарий
+  const audioPath = path.join(root, 'js', 'audio.js');
+  let audioLoaded = false;
+  if (fs.existsSync(audioPath)) {
+    try {
+      window.eval(fs.readFileSync(audioPath, 'utf8'));
+      audioLoaded = !!window.DVAudio;
+      window.document.dispatchEvent(new window.MouseEvent('pointerdown', { bubbles: true }));
+    } catch (e) {
+      errors.push('audio.js: ' + (e && e.stack || e));
+    }
+  }
+
   // запускаем игру (DOMContentLoaded уже прошёл до вставки бандла)
   window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
   await new Promise((r) => setTimeout(r, 120));
@@ -282,6 +322,15 @@ async function autoPlayer() {
   }
 
   const res = await autoPlayer();
+  if (window.DVAudio) {
+    res.audio = {
+      loaded: audioLoaded,
+      sounds: window.DVAudio.sounds().length,
+      tracks: window.DVAudio.music.tracks.length,
+      lastTrack: window.DVAudio.music.name,
+      ready: window.DVAudio.isReady(),
+    };
+  }
   origLog(JSON.stringify(res, null, 1));
   process.exit(res.chapter >= 6 || res.errors.length ? 0 : 1);
 })();
