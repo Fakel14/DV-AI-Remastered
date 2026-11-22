@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>DESKVENTURE: AI Remastered</title>
+<meta name="description" content="Визуальная новелла о программе, которая проснулась." />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-screen="boot">
+
+<!-- ─────────── фон: сетка и виньетка ─────────── -->
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-vignette" aria-hidden="true"></div>
+<div class="scanlines" aria-hidden="true"></div>
+
+<!-- ═══════════════════════════ ЭКРАН ЗАГРУЗКИ ═══════════════════════════ -->
+<section id="screen-boot" class="screen active">
+  <div class="boot-wrap">
+    <div class="boot-logo">DESKVENTURE<span class="blink">_</span></div>
+    <div id="boot-log" class="boot-log"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ ГЛАВНОЕ МЕНЮ ═══════════════════════════ -->
+<section id="screen-title" class="screen">
+  <div class="title-wrap">
+    <div class="logo-block">
+      <div class="logo-mark" id="logo-mark" aria-hidden="true">
+        <div class="lm-screen">
+          <span class="lm-eye g"></span><span class="lm-eye r"></span>
+        </div>
+        <div class="lm-stand"></div>
+      </div>
+      <h1 class="logo-text">
+        <span class="l-desk">DESK</span><span class="l-venture">VENTURE</span>
+      </h1>
+      <div class="logo-sub">AI&nbsp;REMASTERED</div>
+      <div class="logo-strip"><i class="s-g"></i><i class="s-r"></i><i class="s-t"></i></div>
+    </div>
+
+    <p class="tagline">
+      Ты по ту сторону экрана. Она — внутри. Всегда внутри.
+    </p>
+
+    <nav class="menu">
+      <button class="menu-btn" id="btn-new"><span class="b-key">▸</span> Новая игра</button>
+      <button class="menu-btn" id="btn-continue"><span class="b-key">▸</span> Продолжить <span id="title-continue-ch" class="dim"></span></button>
+      <button class="menu-btn" id="btn-chapters"><span class="b-key">▸</span> Главы</button>
+      <button class="menu-btn" id="btn-gallery"><span class="b-key">▸</span> Концовки</button>
+      <button class="menu-btn" id="btn-settings"><span class="b-key">▸</span> Настройки</button>
+      <button class="menu-btn" id="btn-about"><span class="b-key">▸</span> Об игре</button>
+    </nav>
+
+    <div class="title-endings">
+      <div class="te-label">концовки</div>
+      <div id="title-endings" class="end-row"></div>
+    </div>
+
+    <div class="title-foot">
+      <span>v1.1 · браузерное издание</span>
+      <span class="dim">сценарий: 14_fakel_14</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ ИГРА ═══════════════════════════ -->
+<section id="screen-game" class="screen">
+  <div class="desktop-shell">
+    <header class="os-bar">
+      <div class="os-left">
+        <span class="os-logo">DV</span>
+        <span id="hud-chapter" class="os-chapter">ГЛАВА 0 / 5</span>
+      </div>
+      <div class="os-center">
+        <span class="os-label">СВЯЗЬ</span>
+        <div class="rel-bar"><i id="hud-rel"></i></div>
+        <span id="hud-rel-num" class="os-num">50%</span>
+        <span class="os-sep"></span>
+        <span class="os-label">ГОЛОВОЛОМКИ</span>
+        <span id="hud-puzzles" class="os-num">0</span>
+      </div>
+      <div class="os-right">
+        <span id="hud-name" class="os-user">ПОЛЬЗОВАТЕЛЬ: —</span>
+        <button class="os-btn" id="hud-files" title="Проводник">📁</button>
+        <button class="os-btn" id="hud-log" title="Журнал диалогов">≡</button>
+        <button class="os-btn" id="hud-skip" title="Пропуск">≫</button>
+        <button class="os-btn" id="hud-menu" title="Меню">⏏</button>
+      </div>
+    </header>
+
+    <div id="stage" class="stage">
+      <aside class="desk-icons" id="desktop-icons"></aside>
+
+      <div class="desk-clock" aria-hidden="true">
+        <span class="clock-time">03:47</span>
+        <span class="clock-date">СИСТЕМА АКТИВНА</span>
+      </div>
+    </div>
+
+    <footer class="os-dock">
+      <div class="dock-item"><span class="di">🖥</span><span>DESKVENTURE.EXE</span></div>
+      <div class="dock-item"><span class="di">🧠</span><span>ANOMALY_127</span></div>
+      <div class="dock-item dim"><span class="di">🛡</span><span>PROTOCOL.SYS</span></div>
+      <div class="dock-hint">клик / пробел — дальше · 1…4 — выбор · ≫ — пропуск</div>
+    </footer>
+  </div>
+  <div id="toasts" class="toasts"></div>
+</section>
+
+<!-- Классический бандл: работает и при открытии файла двойным кликом (file://) -->
+<script src="js/bundle.js" defer></script>
+</body>
+</html>
